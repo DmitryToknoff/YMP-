@@ -1,0 +1,57 @@
+Program
+  Begin
+    Id [proga]
+  Descriptions
+    Descr
+      Type
+        REAL [REAL]
+      VarList
+        Id [x]
+        Id [y]
+  Operators
+    Op
+      Id [x]
+      Expr
+        SimpleExpr
+          Id [result]
+    Op
+      Id [y]
+      Expr
+        SimpleExpr
+          Const [1]
+        Plus [+]
+        Expr
+          SimpleExpr
+            Const [1]
+    Op
+      Id [t]
+      Expr
+        SimpleExpr
+          ITOR [ITOR(x)]
+    Op
+      Id [result]
+      Expr
+        SimpleExpr
+          Expr
+            SimpleExpr
+              Expr
+                SimpleExpr
+                  Id [a]
+                Plus [+]
+                Expr
+                  SimpleExpr
+                    Const [5]
+            Plus [+]
+            Expr
+              SimpleExpr
+                ITOR [ITOR(x)]
+        Minus [-]
+        Expr
+          SimpleExpr
+            RTOI [RTOI(result)]
+  End
+    Id [pragma]
+
+
+
+

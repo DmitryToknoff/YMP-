@@ -1,0 +1,9 @@
+PROGRAM proga
+REAL x, y
+x = result
+y = 1 + 1
+t = ITOR(x)
+result = ((a + 5)+ITOR(x))-RTOI(result)
+END pragma
+
+
