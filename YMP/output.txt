@@ -6,49 +6,32 @@ Program
       Type
         REAL [REAL]
       VarList
-        Id [x]
-        Id [y]
+        Id [a]
+        Id [b]
+        Id [c]
+    Descr
+      Type
+        INTEGER [INTEGER]
+      VarList
+        Id [as]
+        Id [sdasd]
+        Id [fda]
   Operators
     Op
-      Id [x]
+      Id [cnt]
       Expr
         SimpleExpr
-          Id [result]
-    Op
-      Id [y]
-      Expr
-        SimpleExpr
-          Const [1]
-        Plus [+]
-        Expr
-          SimpleExpr
-            Const [1]
-    Op
-      Id [t]
-      Expr
-        SimpleExpr
-          ITOR [ITOR(x)]
-    Op
-      Id [result]
-      Expr
-        SimpleExpr
-          Expr
-            SimpleExpr
-              Expr
-                SimpleExpr
-                  Id [a]
-                Plus [+]
-                Expr
-                  SimpleExpr
-                    Const [5]
-            Plus [+]
-            Expr
-              SimpleExpr
-                ITOR [ITOR(x)]
+          Id [a]
         Minus [-]
         Expr
           SimpleExpr
-            RTOI [RTOI(result)]
+            Expr
+              SimpleExpr
+                Id [bs]
+              Minus [-]
+              Expr
+                SimpleExpr
+                  Id [s]
   End
     Id [pragma]
 

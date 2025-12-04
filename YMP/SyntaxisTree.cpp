@@ -280,8 +280,10 @@ Node* SyntaxisTree::parseSimpleExpr() {
         }
         case LPAREN: {
             match(LPAREN);
+            ++d;
             node->add(parseExpr());
             match(RPAREN);
+//            --d;
             break;
         }
         case ITOR:
@@ -289,8 +291,13 @@ Node* SyntaxisTree::parseSimpleExpr() {
             Node* funcNode = new Node(
                 cur_token.type == ITOR ? "ITOR" : "RTOI",
                 cur_token, cur_token.line);
+            match((funcNode->token.type == ITOR ? ITOR : RTOI));
+            match(LPAREN);
+//            ++d;
+            funcNode->add(parseExpr());
+            match(RPAREN);
+//            --d;
             node->add(funcNode);
-            next_token();
             break;
         }
         default: {

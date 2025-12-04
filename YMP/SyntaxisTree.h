@@ -24,6 +24,7 @@ class SyntaxisTree {
     Token cur_token;
     std::vector<std::string> errors;
     Node* root = nullptr;
+    int d = 0;
     
     void next_token();
     void error(const std::string& msg);

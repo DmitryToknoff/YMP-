@@ -39,7 +39,7 @@ Token Lexer::check_number() {
     bool is_real = false, is_error = false;
     skip_space();
     
-    while (cur_pos < s.size() && !std::isspace(s[cur_pos])) {
+    while (cur_pos < s.size() && !std::isspace(s[cur_pos]) && std::isdigit(s[cur_pos])) {
         val += s[cur_pos];
         next_char();
     }
@@ -77,7 +77,7 @@ Token Lexer::check_keyword() {
     int start_pos = position;
     int start_line = line;
     
-    while (cur_pos < s.size() && !std::isspace(s[cur_pos])) {
+    while (cur_pos < s.size() && !std::isspace(s[cur_pos]) && (std::isalpha(s[cur_pos]) || s[cur_pos] == ',')) {
         val += s[cur_pos];
         next_char();
     }
@@ -87,7 +87,8 @@ Token Lexer::check_keyword() {
     else if (val == "END") type = TokenType::END;
     else if (val == "INTEGER") type = TokenType::INTEGER;
     else if (val == "REAL") type = TokenType::REAL;
-    
+    else if (val == "ITOR") type = TokenType::ITOR;
+    else if (val == "RTOI") type = TokenType::RTOI;
     bool ok = true;
     
     for (int i = 0; i < val.size() - (val.back() == ','); ++i) {
@@ -98,8 +99,6 @@ Token Lexer::check_keyword() {
     }
     
     std::string sub_val = val.substr(0, 5);
-    if (sub_val == "ITOR(" && val.back() == ')') type = TokenType::ITOR, ok = true;
-    if (sub_val == "RTOI(" && val.back() == ')') type = TokenType::RTOI, ok = true;
     if (type == TokenType::IDENTIFIER) {
         if (!ok) {
             return Token(TokenType::ERROR, "Is not name varible " + val, line, position);

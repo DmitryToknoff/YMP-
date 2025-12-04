@@ -1,9 +1,7 @@
 PROGRAM proga
-REAL x, y
-x = result
-y = 1 + 1
-t = ITOR(x)
-result = ((a + 5)+ITOR(x))-RTOI(result)
+REAL a, b, c
+INTEGER as, sdasd, fda
+cnt = a - (bs - s)
 END pragma
 
 
