@@ -115,12 +115,16 @@ Node* SyntaxisTree::parseEnd() {
 }
 Node* SyntaxisTree::parseDescriptions() {
     Node* node = new Node("Descriptions", Token(), cur_token.line);
-    
-    
+    bool ok = false;
     while (cur_token.type == INTEGER || cur_token.type == REAL) {
         node->add(parseDescr());
+        ok = true;
     }
     
+    
+    if (!ok) {
+        error("Нету VARLIST/TYPE");
+    }
     return node;
 }
 
@@ -189,9 +193,14 @@ Node* SyntaxisTree::parseDescr() {
 }
 Node* SyntaxisTree::parseOperators() {
     Node* node = new Node("Operators", Token(), cur_token.line);
-    
+    bool ok = false;
     while (cur_token.type == IDENTIFIER) {
         node->add(parseOp());
+        ok = true;
+    }
+    
+    if (!ok) {
+        error("Нету выражений, никаких");
     }
     
     return node;
@@ -262,18 +271,18 @@ Node* SyntaxisTree::parseSimpleExpr() {
     
     switch (cur_token.type) {
         case IDENTIFIER: {
-            Node* idNode = new Node("Id", cur_token, cur_token.line);
+            Node* id = new Node("Id", cur_token, cur_token.line);
             if (cur_token.value.back() == ',')
                 error("Synt error: name " + cur_token.value);
-            node->add(idNode);
+            node->add(id);
             hashTable.insert(cur_token);
             match(IDENTIFIER);
             break;
         }
         case INT_NUMBER:
         case REAL_NUMBER: {
-            Node* constNode = new Node("Const", cur_token, cur_token.line);
-            node->add(constNode);
+            Node* tmp = new Node("Const", cur_token, cur_token.line);
+            node->add(tmp);
             hashTable.insert(cur_token);
             next_token();
             break;
@@ -288,16 +297,16 @@ Node* SyntaxisTree::parseSimpleExpr() {
         }
         case ITOR:
         case RTOI: {
-            Node* funcNode = new Node(
+            Node* tmp = new Node(
                 cur_token.type == ITOR ? "ITOR" : "RTOI",
                 cur_token, cur_token.line);
-            match((funcNode->token.type == ITOR ? ITOR : RTOI));
+            match((tmp->token.type == ITOR ? ITOR : RTOI));
             match(LPAREN);
 //            ++d;
-            funcNode->add(parseExpr());
+            tmp->add(parseExpr());
             match(RPAREN);
 //            --d;
-            node->add(funcNode);
+            node->add(tmp);
             break;
         }
         default: {
@@ -322,10 +331,11 @@ void SyntaxisTree::print_tree(Node* node, std::ofstream& file_out, int depth) {
     if (!node) return;
     
     std::string s(depth * 2, ' ');
+    
     file_out << s << node->name;
     
     if (!node->token.value.empty()) {
-        file_out << " [" << node->token.value << "]";
+            file_out << " [" << node->token.value << "]";
     }
     
     file_out << std::endl;

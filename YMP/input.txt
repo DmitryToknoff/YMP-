@@ -1,7 +1,8 @@
 PROGRAM proga
-REAL a, b, c
-INTEGER as, sdasd, fda
-cnt = a - (bs - s)
-END pragma
+REAL a, b, c, a
+INTEGER cnt
+cnt = a
+b = a - ad
+END proga
 
 

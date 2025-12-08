@@ -9,31 +9,29 @@ Program
         Id [a]
         Id [b]
         Id [c]
+        Id [a]
     Descr
       Type
         INTEGER [INTEGER]
       VarList
-        Id [as]
-        Id [sdasd]
-        Id [fda]
+        Id [cnt]
   Operators
     Op
       Id [cnt]
       Expr
         SimpleExpr
           Id [a]
+    Op
+      Id [b]
+      Expr
+        SimpleExpr
+          Id [a]
         Minus [-]
         Expr
           SimpleExpr
-            Expr
-              SimpleExpr
-                Id [bs]
-              Minus [-]
-              Expr
-                SimpleExpr
-                  Id [s]
+            Id [ad]
   End
-    Id [pragma]
+    Id [proga]
 
 
 
