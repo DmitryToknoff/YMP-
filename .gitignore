@@ -1,0 +1,35 @@
+# Created by https://www.toptal.com/developers/gitignore/api/xcode,xcodeinjection
+# Edit at https://www.toptal.com/developers/gitignore?templates=xcode,xcodeinjection
+
+### Xcode ###
+## User settings
+xcuserdata/
+
+## Xcode 8 and earlier
+*.xcscmblueprint
+*.xccheckout
+
+# Игнорировать все файлы workspace
+*.xcworkspace/
+
+# Игнорировать все файлы проекта
+*.xcodeproj/
+
+### Xcode Patch ###
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+/*.gcno
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+### XcodeInjection ###
+# Code Injection
+#
+# After new code Injection tools there's a generated folder /iOSInjectionProject
+# https://github.com/johnno1962/injectionforxcode
+
+iOSInjectionProject/
+
+# End of https://www.toptal.com/developers/gitignore/api/xcode,xcodeinjection
