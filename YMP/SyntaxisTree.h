@@ -29,20 +29,20 @@ class SyntaxisTree {
     void next_token();
     void error(const std::string& msg);
     void synchronize();
-    void match(TokenType expected);
+    void checker(TokenType expected);
     void print_tree(Node* node, std::ofstream& file_out, int depth);
     
-    Node* parseProgram();
-    Node* parseBegin();
-    Node* parseEnd();
-    Node* parseDescriptions();
-    Node* parseDescr();
-    Node* parseType();
-    Node* parseVarList();
-    Node* parseOperators();
-    Node* parseOp();
-    Node* parseExpr();
-    Node* parseSimpleExpr();     
+    Node* parse_program();
+    Node* parse_begin();
+    Node* parse_end();
+    Node* parse_descriptions();
+    Node* parse_descr();
+    Node* parse_type();
+    Node* parse_var_list();
+    Node* parse_operator();
+    Node* parse_op();
+    Node* parse_expr();
+    Node* parse_simple_expr();
     
 public:
     SyntaxisTree(Lexer& l, HashTable& ht);

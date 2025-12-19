@@ -32,14 +32,14 @@ void Lexer::skip_space() {
 }
 
 
-Token Lexer::check_number() {
+Token Lexer::number() {
     std::string val;
     int start_pos = position;
     int start_line = line;
     bool is_real = false, is_error = false;
     skip_space();
     
-    while (cur_pos < s.size() && !std::isspace(s[cur_pos]) && std::isdigit(s[cur_pos])) {
+    while (cur_pos < s.size() && !std::isspace(s[cur_pos]) && (std::isdigit(s[cur_pos]) || s[cur_pos] == '.')) {
         val += s[cur_pos];
         next_char();
     }
@@ -72,7 +72,7 @@ Token Lexer::check_number() {
 
 
 
-Token Lexer::check_keyword() {
+Token Lexer::keyword() {
     std::string val;
     int start_pos = position;
     int start_line = line;
@@ -107,7 +107,7 @@ Token Lexer::check_keyword() {
     
     return Token(type, val, start_line, start_pos);
 }
-Token Lexer::check_operator() {
+Token Lexer::op() {
     int start_line = line;
     int start_pos = position;
     char op = get_cur_char();
@@ -136,14 +136,14 @@ Token Lexer::get_next_token() {
     Token token;
     if (std::isalpha(current)) {
         
-        token = check_keyword();
+        token = keyword();
     } else if (std::isdigit(current)) {
         
-        token = check_number();
+        token = number();
     }
     else {
         
-        token = check_operator();
+        token = op();
     }
     
     hashTable.insert(token);

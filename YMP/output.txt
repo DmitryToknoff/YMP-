@@ -1,38 +1,6 @@
-Program
-  Begin
-    Id [proga]
-  Descriptions
-    Descr
-      Type
-        REAL [REAL]
-      VarList
-        Id [a]
-        Id [b]
-        Id [c]
-        Id [a]
-    Descr
-      Type
-        INTEGER [INTEGER]
-      VarList
-        Id [cnt]
-  Operators
-    Op
-      Id [cnt]
-      Expr
-        SimpleExpr
-          Id [a]
-    Op
-      Id [b]
-      Expr
-        SimpleExpr
-          Id [a]
-        Minus [-]
-        Expr
-          SimpleExpr
-            Id [ad]
-  End
-    Id [proga]
-
-
-
-
+PROGRAM start
+REAL a b c 4 DECL
+INTEGER cnt d g 4 DECL
+cnt cnt a RTOI CALL 1 + - =
+b 1.1 2 cnt + ITOR CALL - =
+END start

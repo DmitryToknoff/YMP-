@@ -1,8 +1,8 @@
-PROGRAM proga
-REAL a, b, c, a
-INTEGER cnt
-cnt = a
-b = a - ad
-END proga
+PROGRAM start
+REAL a, b, c
+INTEGER cnt, d, g
+cnt = cnt - (RTOI(a) + 1)
+b = 1.1 - ITOR(2+cnt)
+END start
 
 

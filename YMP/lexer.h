@@ -17,9 +17,9 @@ private:
     char get_cur_char();
     void next_char();
     void skip_space();
-    Token check_number();
-    Token check_keyword();
-    Token check_operator();
+    Token number();
+    Token keyword();
+    Token op();
     void print_error(const std::string& s);
     
 public:

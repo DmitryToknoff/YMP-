@@ -20,64 +20,60 @@ void SyntaxisTree::synchronize() {
     }
 }
 
-Node* SyntaxisTree::parseProgram() {
+Node* SyntaxisTree::parse_program() {
     Node* node = new Node("Program", Token(), cur_token.line);
     
-    node->add(parseBegin());
-    node->add(parseDescriptions());
-    node->add(parseOperators());
-    node->add(parseEnd());
+    node->add(parse_begin());
+    node->add(parse_descriptions());
+    node->add(parse_operator());
+    node->add(parse_end());
     
     return node;
 }
 
 bool SyntaxisTree::parse() {
-    root = parseProgram();
+    root = parse_program();
     
     return errors.empty();
 }
 
 
 
-void SyntaxisTree::match(TokenType expected) {
+void SyntaxisTree::checker(TokenType expected) {
     if (cur_token.type == expected) {
         next_token();
     } else {
-        std::string expectedStr;
+        std::string exp_s;
         switch(expected) {
-            case PROGRAM: expectedStr = "PROGRAM"; break;
-            case END: expectedStr = "END"; break;
-            case INTEGER: expectedStr = "INTEGER"; break;
-            case REAL: expectedStr = "REAL"; break;
-            case ITOR: expectedStr = "ITOR"; break;
-            case RTOI: expectedStr = "RTOI"; break;
-            case IDENTIFIER: expectedStr = "идентификатор"; break;
-            case INT_NUMBER: expectedStr = "целое число"; break;
-            case REAL_NUMBER: expectedStr = "вещественное число"; break;
-            case ASSIGN: expectedStr = "оператор присваивания (=)"; break;
-            case PLUS: expectedStr = "плюс (+)"; break;
-            case MINUS: expectedStr = "минус (-)"; break;
-            case LPAREN: expectedStr = "открывающая скобка (()"; break;
-            case RPAREN: expectedStr = "закрывающая скобка ())"; break;
-            case END_FILE: expectedStr = "конец файла"; break;
-            default: expectedStr = "токен"; break;
+            case PROGRAM: exp_s = "PROGRAM"; break;
+            case END: exp_s = "END"; break;
+            case INTEGER: exp_s = "INTEGER"; break;
+            case REAL: exp_s = "REAL"; break;
+            case ITOR: exp_s = "ITOR"; break;
+            case RTOI: exp_s = "RTOI"; break;
+            case IDENTIFIER: exp_s = "идентификатор"; break;
+            case INT_NUMBER: exp_s = "целое число"; break;
+            case REAL_NUMBER: exp_s = "вещественное число"; break;
+            case ASSIGN: exp_s = "оператор присваивания (=)"; break;
+            case PLUS: exp_s = "плюс (+)"; break;
+            case MINUS: exp_s = "минус (-)"; break;
+            case LPAREN: exp_s = "открывающая скобка (()"; break;
+            case RPAREN: exp_s = "закрывающая скобка ())"; break;
+            case END_FILE: exp_s = "конец файла"; break;
+            default: exp_s = "токен"; break;
         }
-        
-        std::string gotStr = cur_token.value.empty() ?
-            std::to_string(static_cast<int>(cur_token.type)) :
-            "'" + cur_token.value + "'";
-            
-        error("Ожидался " + expectedStr + ", получен " + gotStr);
+    
+        error("Ожидался " + exp_s);
         synchronize();
     }
 }
 
 
-Node* SyntaxisTree::parseBegin() {
+Node* SyntaxisTree::parse_begin() {
     Node* node = new Node("Begin", Token(), cur_token.line);
     
     
-    match(PROGRAM);
+    checker(PROGRAM);
     
     if (cur_token.type == IDENTIFIER) {
         Node* idNode = new Node("Id", cur_token, cur_token.line);
@@ -91,7 +87,7 @@ Node* SyntaxisTree::parseBegin() {
     return node;
 }
 
-Node* SyntaxisTree::parseEnd() {
+Node* SyntaxisTree::parse_end() {
     Node* node = new Node("End", Token(), cur_token.line);
     
     
@@ -100,7 +96,7 @@ Node* SyntaxisTree::parseEnd() {
         return node;
     }
     
-    match(END);
+    checker(END);
     
     if (cur_token.type == IDENTIFIER) {
         Node* idNode = new Node("Id", cur_token, cur_token.line);
@@ -113,11 +109,11 @@ Node* SyntaxisTree::parseEnd() {
     
     return node;
 }
-Node* SyntaxisTree::parseDescriptions() {
+Node* SyntaxisTree::parse_descriptions() {
     Node* node = new Node("Descriptions", Token(), cur_token.line);
     bool ok = false;
     while (cur_token.type == INTEGER || cur_token.type == REAL) {
-        node->add(parseDescr());
+        node->add(parse_descr());
         ok = true;
     }
     
@@ -129,18 +125,18 @@ Node* SyntaxisTree::parseDescriptions() {
 }
 
 
-Node* SyntaxisTree::parseType() {
+Node* SyntaxisTree::parse_type() {
     Node* node = new Node("Type", Token(), cur_token.line);
     
     if (cur_token.type == INTEGER) {
         Node* typeNode = new Node("INTEGER", cur_token, cur_token.line);
         node->add(typeNode);
-        match(INTEGER);
+        checker(INTEGER);
     }
     else if (cur_token.type == REAL) {
         Node* typeNode = new Node("REAL", cur_token, cur_token.line);
         node->add(typeNode);
-        match(REAL);
+        checker(REAL);
     }
     else {
         error("Ожидался тип (INTEGER или REAL)");
@@ -149,7 +145,7 @@ Node* SyntaxisTree::parseType() {
     return node;
 }
 
-Node* SyntaxisTree::parseVarList() {
+Node* SyntaxisTree::parse_var_list() {
     Node* node = new Node("VarList", Token(), cur_token.line);
     
     if (cur_token.type == IDENTIFIER) {
@@ -158,7 +154,7 @@ Node* SyntaxisTree::parseVarList() {
         Node* idNode = new Node("Id", cur_token, cur_token.line);
         node->add(idNode);
         hashTable.insert(cur_token);
-        match(IDENTIFIER);
+        checker(IDENTIFIER);
         
         while (ok && cur_token.type == IDENTIFIER) {
             ok = cur_token.value.back() == ',';
@@ -167,7 +163,7 @@ Node* SyntaxisTree::parseVarList() {
                 Node* nextIdNode = new Node("Id", cur_token, cur_token.line);
                 node->add(nextIdNode);
                 hashTable.insert(cur_token);
-                match(IDENTIFIER);
+                checker(IDENTIFIER);
             }
         }
         
@@ -182,20 +178,20 @@ Node* SyntaxisTree::parseVarList() {
     return node;
 }
 
-Node* SyntaxisTree::parseDescr() {
+Node* SyntaxisTree::parse_descr() {
     Node* node = new Node("Descr", Token(), cur_token.line);
     
     
-    node->add(parseType());
-    node->add(parseVarList());
+    node->add(parse_type());
+    node->add(parse_var_list());
     
     return node;
 }
-Node* SyntaxisTree::parseOperators() {
+Node* SyntaxisTree::parse_operator() {
     Node* node = new Node("Operators", Token(), cur_token.line);
     bool ok = false;
     while (cur_token.type == IDENTIFIER) {
-        node->add(parseOp());
+        node->add(parse_op());
         ok = true;
     }
     
@@ -206,7 +202,7 @@ Node* SyntaxisTree::parseOperators() {
     return node;
 }
 
-Node* SyntaxisTree::parseOp() {
+Node* SyntaxisTree::parse_op() {
     Node* node = new Node("Op", Token(), cur_token.line);
     
     if (cur_token.type == IDENTIFIER) {
@@ -217,13 +213,13 @@ Node* SyntaxisTree::parseOp() {
         Node* idNode = new Node("Id", cur_token, cur_token.line);
         node->add(idNode);
         hashTable.insert(cur_token);
-        match(IDENTIFIER);
+        checker(IDENTIFIER);
         
         if (cur_token.type == ASSIGN) {
-            match(ASSIGN);
+            checker(ASSIGN);
             
             
-            node->add(parseExpr());
+            node->add(parse_expr());
         } else {
             error("Ожидался оператор присваивания '='");
         }
@@ -241,10 +237,10 @@ Node* SyntaxisTree::parseOp() {
 }
 
 
-Node* SyntaxisTree::parseExpr() {
+Node* SyntaxisTree::parse_expr() {
     Node* node = new Node("Expr", Token(), cur_token.line);
     
-    node->add(parseSimpleExpr());
+    node->add(parse_simple_expr());
     
     if (cur_token.type == PLUS || cur_token.type == MINUS) {
         Node* opNode = new Node(
@@ -253,7 +249,7 @@ Node* SyntaxisTree::parseExpr() {
         node->add(opNode);
         next_token();
     
-        node->add(parseExpr());
+        node->add(parse_expr());
     }
     
     if (cur_token.type != IDENTIFIER && cur_token.type != END) {
@@ -266,7 +262,7 @@ Node* SyntaxisTree::parseExpr() {
     return node;
 }
 
-Node* SyntaxisTree::parseSimpleExpr() {
+Node* SyntaxisTree::parse_simple_expr() {
     Node* node = new Node("SimpleExpr", Token(), cur_token.line);
     
     switch (cur_token.type) {
@@ -276,7 +272,7 @@ Node* SyntaxisTree::parseSimpleExpr() {
                 error("Synt error: name " + cur_token.value);
             node->add(id);
             hashTable.insert(cur_token);
-            match(IDENTIFIER);
+            checker(IDENTIFIER);
             break;
         }
         case INT_NUMBER:
@@ -288,10 +284,10 @@ Node* SyntaxisTree::parseSimpleExpr() {
             break;
         }
         case LPAREN: {
-            match(LPAREN);
+            checker(LPAREN);
             ++d;
-            node->add(parseExpr());
-            match(RPAREN);
+            node->add(parse_expr());
+            checker(RPAREN);
 //            --d;
             break;
         }
@@ -300,11 +296,11 @@ Node* SyntaxisTree::parseSimpleExpr() {
             Node* tmp = new Node(
                 cur_token.type == ITOR ? "ITOR" : "RTOI",
                 cur_token, cur_token.line);
-            match((tmp->token.type == ITOR ? ITOR : RTOI));
-            match(LPAREN);
+            checker((tmp->token.type == ITOR ? ITOR : RTOI));
+            checker(LPAREN);
 //            ++d;
-            tmp->add(parseExpr());
-            match(RPAREN);
+            tmp->add(parse_expr());
+            checker(RPAREN);
 //            --d;
             node->add(tmp);
             break;
