@@ -16,11 +16,13 @@ struct Hash {
 };
 
 class HashTable {
-    const int size = 500;
+    int size = 500;
     Hash** t;
     int cur;
+    int cap = 500;
     
     int _hash(const std::string& key);
+    void resize();
     
 public:
     HashTable();

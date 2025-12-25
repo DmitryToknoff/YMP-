@@ -26,12 +26,35 @@ int HashTable::_hash(const std::string& key) {
     long long mod = 1e9 + 7;
     long long x = 257;
     for (char c : key) {
-        hash = ((hash * x + c) % mod) % size;
+        hash = ((hash * x + c) % mod) % cap;
     }
     return static_cast<int>(hash);
 }
 
+void HashTable::resize() {
+    int tmp = cap;
+    cap <<= 1;
+    Hash** tt = t;
+    
+    t = new Hash*[cap];
+    
+    for (int i = 0; i < tmp; ++i) {
+        Hash* node = tt[i];
+        while (node != nullptr) {
+            Hash* next = node->next;
+            int tmp = _hash(node->lex);
+            node->next = t[tmp];
+            t[tmp] = node;
+            ++cur;
+            node = next;
+        }
+    }
+    
+    delete[] tt;
+}
+
 int HashTable::insert(const Token& token) {
+    if (cur > cap * 0.7) resize();
     Hash* ex = find(token);
     if (ex != nullptr) {
         return ex->index;

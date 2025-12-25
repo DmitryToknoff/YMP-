@@ -3,7 +3,7 @@
 #include <string>
 #include <cctype>
 
-Lexer::Lexer(const std::string& _in, HashTable& ht) : hashTable(ht), s(_in), cur_pos(0), line(1), position(1), is_error(false), paren_depth(0) {}
+Lexer::Lexer(const std::string& _in, HashTable& ht) : hashTable(ht), s(_in), cur_pos(0), line(1), pos(1), is_error(false), paren_depth(0) {}
 
 char Lexer::get_cur_char() {
     if (cur_pos < s.size()) {
@@ -16,12 +16,12 @@ char Lexer::get_cur_char() {
 void Lexer::next_char() {
     if (cur_pos < s.size()) {
         if (s[cur_pos] == '\n') {
-            line++;
-            position = 1;
+            ++line;
+            pos = 1;
         } else {
-            position++;
+            ++pos;
         }
-        cur_pos++;
+        ++cur_pos;
     }
 }
 
@@ -34,7 +34,7 @@ void Lexer::skip_space() {
 
 Token Lexer::number() {
     std::string val;
-    int start_pos = position;
+    int start_pos = pos;
     int start_line = line;
     bool is_real = false, is_error = false;
     skip_space();
@@ -74,7 +74,7 @@ Token Lexer::number() {
 
 Token Lexer::keyword() {
     std::string val;
-    int start_pos = position;
+    int start_pos = pos;
     int start_line = line;
     
     while (cur_pos < s.size() && !std::isspace(s[cur_pos]) && (std::isalpha(s[cur_pos]) || s[cur_pos] == ',')) {
@@ -101,7 +101,7 @@ Token Lexer::keyword() {
     std::string sub_val = val.substr(0, 5);
     if (type == TokenType::IDENTIFIER) {
         if (!ok) {
-            return Token(TokenType::ERROR, "Is not name varible " + val, line, position);
+            return Token(TokenType::ERROR, "Is not name varible " + val, line, pos);
         }
     }
     
@@ -109,35 +109,34 @@ Token Lexer::keyword() {
 }
 Token Lexer::op() {
     int start_line = line;
-    int start_pos = position;
+    int start_pos = pos;
     char op = get_cur_char();
     next_char();
 
-    switch (op) {
-        case '=': return Token(TokenType::ASSIGN, "=", start_line, start_pos);
-        case '+': return Token(TokenType::PLUS, "+", start_line, start_pos);
-        case '-': return Token(TokenType::MINUS, "-", start_line, start_pos);
-        case ',': return Token(TokenType::COMMA, ",", start_line, start_pos);
-        case '(': return Token(TokenType::LPAREN, "(", start_line, start_pos);
-        case ')': return Token(TokenType::RPAREN, ")", start_line, start_pos);
-        default:
-            return Token(TokenType::ERROR, std::string(1, op), start_line, start_pos);
-    }
+    if (op == '=') return Token(TokenType::ASSIGN, "=", start_line, start_pos);
+    else if (op == '+') return Token(TokenType::PLUS, "+", start_line, start_pos);
+    else if (op == '-') return Token(TokenType::MINUS, "-", start_line, start_pos);
+    else if (op == ',') return Token(TokenType::COMMA, ",", start_line, start_pos);
+    else if (op == '(') return Token(TokenType::LPAREN, "(", start_line, start_pos);
+    else if (op == ')') return Token(TokenType::RPAREN, ")", start_line, start_pos);
+    
+    
+    return Token(TokenType::ERROR, std::string(1, op), start_line, start_pos);
 }
 
 Token Lexer::get_next_token() {
     skip_space();
     
     if (cur_pos >= s.size()) {
-        return Token(TokenType::END_FILE, "", line, position);
+        return Token(TokenType::END_FILE, "", line, pos);
     }
     
-    char current = get_cur_char();
+    char cur = get_cur_char();
     Token token;
-    if (std::isalpha(current)) {
+    if (std::isalpha(cur)) {
         
         token = keyword();
-    } else if (std::isdigit(current)) {
+    } else if (std::isdigit(cur)) {
         
         token = number();
     }

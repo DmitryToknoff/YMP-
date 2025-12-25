@@ -28,7 +28,7 @@ class SyntaxisTree {
     
     void next_token();
     void error(const std::string& msg);
-    void synchronize();
+    void _continue();
     void checker(TokenType expected);
     void print_tree(Node* node, std::ofstream& file_out, int depth);
     

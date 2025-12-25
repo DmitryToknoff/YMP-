@@ -11,7 +11,7 @@ private:
     std::string s;
     int cur_pos;
     int line;
-    int position;
+    int pos;
     bool is_error;
     
     char get_cur_char();
@@ -28,6 +28,6 @@ public:
     Token get_next_token();
     bool get_is_error() const { return is_error; }
     int get_line() const { return line; }
-    int get_pos() const { return position; }
+    int get_pos() const { return pos; }
     void start();
 };

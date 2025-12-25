@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 #include <stack>
+#include "Token.h"
 
 void Semantic::add_error(const std::string& msg, int line) {
     std::string ans = "ERROR at the line: " + std::to_string(line) + " " + msg;
@@ -11,7 +12,7 @@ void Semantic::add_error(const std::string& msg, int line) {
 }
 
 void Semantic::checker_variable(const std::string& s, int line) {
-    if (real.find(s) == real.end() && intager.find(s) == intager.end()) {
+    if (ht.find(Token(TokenType::ERROR, s))) {
         add_error("Не сущ " + s, line);
     }
 }
@@ -43,11 +44,11 @@ void Semantic::parse_descr(Node* node) {
     std::string type = node->child[0]->child[0]->name;
     std::vector<std::string> varlist;
     for (auto& id: node->child[1]->child) {
-        if (real.find(id->token.value) != real.end() || intager.find(id->token.value) != intager.end() || id->token.value == title) {
+        if (ht.find(Token(TokenType::ERROR, node->token.value))) {
             add_error("Уже есть такое название переменной/программы", id->token.line);
         } else {
-            if (type == "REAL") real[id->token.value] = 1;
-            else intager[id->token.value] = 1;
+            if (type == "REAL") ht.insert(Token(TokenType::REAL, id->token.value));
+            else ht.insert(Token(TokenType::INTEGER, id->token.value));
             
             varlist.push_back(id->token.value);
         }
@@ -76,7 +77,7 @@ void Semantic::parse_op(Node *node) {
     
     std::string var_name = node->child[0]->token.value;
     checker_variable(var_name, node->child[0]->token.line);
-    std::string var_type = (real.find(var_name) != real.end()) ? "REAL" : "INTEGER";
+    std::string var_type = (ht.find(Token(TokenType::ERROR, var_name))->type == REAL ? "REAL" : "INTEGER");;
     
     std::vector<std::string> poliz;
     poliz.push_back(var_name);
@@ -84,7 +85,7 @@ void Semantic::parse_op(Node *node) {
     std::function<std::string(Node*)> dfs = [&](Node* cur) -> std::string {
         if (!cur) return "ERROR";
         
-        if (cur->name == "Expr" && cur->child.size() == 3) {
+        if (cur->name == "expr" && cur->child.size() == 3) {
             std::string left_type = dfs(cur->child[0]);
             
             std::string right_type = dfs(cur->child[2]);
@@ -104,8 +105,8 @@ void Semantic::parse_op(Node *node) {
             return left_type;
         }
         
-        else if (cur->name == "SimpleExpr" ||
-                (cur->name == "Expr" && cur->child.size() == 1)) {
+        else if (cur->name == "dop_expr" ||
+                (cur->name == "expr" && cur->child.size() == 1)) {
             return dfs(cur->child[0]);
         }
         
@@ -144,7 +145,7 @@ void Semantic::parse_op(Node *node) {
             std::string var = cur->token.value;
             checker_variable(var, cur->line);
             
-            std::string type = (real.find(var) != real.end()) ? "REAL" : "INTEGER";
+            std::string type = (ht.find(Token(TokenType::ERROR, var))->type == REAL ? "REAL" : "INTEGER");
             
             poliz.push_back(var);
             

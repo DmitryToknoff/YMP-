@@ -1,6 +1,59 @@
-PROGRAM start
-REAL a b c 4 DECL
-INTEGER cnt d g 4 DECL
-cnt cnt a RTOI CALL 1 + - =
-b 1.1 2 cnt + ITOR CALL - =
-END start
+Program
+  Begin
+    Id [start]
+  Descriptions
+    Descr
+      Type
+        REAL [REAL]
+      VarList
+        Id [a]
+        Id [b]
+        Id [c]
+    Descr
+      Type
+        INTEGER [INTEGER]
+      VarList
+        Id [cnt]
+        Id [d]
+        Id [g]
+  Operators
+    Op
+      Id [cnt]
+      expr
+        dop_expr
+          Id [cnt]
+        Minus [-]
+        expr
+          dop_expr
+            expr
+              dop_expr
+                RTOI [RTOI]
+                  expr
+                    dop_expr
+                      Id [a]
+              Plus [+]
+              expr
+                dop_expr
+                  Const [1]
+    Op
+      Id [b]
+      expr
+        dop_expr
+          Const [1.1]
+        Minus [-]
+        expr
+          dop_expr
+            ITOR [ITOR]
+              expr
+                dop_expr
+                  Const [2]
+                Plus [+]
+                expr
+                  dop_expr
+                    Id [cnt]
+  End
+    Id [start]
+
+
+
+

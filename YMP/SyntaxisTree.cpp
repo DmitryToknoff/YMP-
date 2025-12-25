@@ -14,7 +14,7 @@ void SyntaxisTree::error(const std::string& msg) {
     ss << "Error at line " << cur_token.line << ", position " << cur_token.pos << ": " << msg;
     errors.push_back(ss.str());
 }
-void SyntaxisTree::synchronize() {
+void SyntaxisTree::_continue() {
     while (cur_token.type != END_FILE && cur_token.type != END && cur_token.type != INTEGER && cur_token.type != REAL && cur_token.type != IDENTIFIER) {
         next_token();
     }
@@ -39,35 +39,33 @@ bool SyntaxisTree::parse() {
 
 
 
-void SyntaxisTree::checker(TokenType expected) {
-    if (cur_token.type == expected) {
+void SyntaxisTree::checker(TokenType exp) {
+    if (cur_token.type == exp) {
         next_token();
     } else {
         std::string exp_s;
-        switch(expected) {
-            case PROGRAM: exp_s = "PROGRAM"; break;
-            case END: exp_s = "END"; break;
-            case INTEGER: exp_s = "INTEGER"; break;
-            case REAL: exp_s = "REAL"; break;
-            case ITOR: exp_s = "ITOR"; break;
-            case RTOI: exp_s = "RTOI"; break;
-            case IDENTIFIER: exp_s = "идентификатор"; break;
-            case INT_NUMBER: exp_s = "целое число"; break;
-            case REAL_NUMBER: exp_s = "вещественное число"; break;
-            case ASSIGN: exp_s = "оператор присваивания (=)"; break;
-            case PLUS: exp_s = "плюс (+)"; break;
-            case MINUS: exp_s = "минус (-)"; break;
-            case LPAREN: exp_s = "открывающая скобка (()"; break;
-            case RPAREN: exp_s = "закрывающая скобка ())"; break;
-            case END_FILE: exp_s = "конец файла"; break;
-            default: exp_s = "токен"; break;
-        }
+        
+        if (exp == PROGRAM) exp_s = "PROGRAM";
+        else if (exp == END) exp_s = "END";
+        else if (exp == ASSIGN) exp_s = "оператор присваивания";
+        else if (exp == INTEGER) exp_s = "INTEGER";
+        else if (exp == REAL) exp_s = "REAL";
+        else if (exp == ITOR) exp_s = "ITOR";
+        else if (exp == ASSIGN) exp_s = "оператор присваивания";
+        else if (exp == RTOI) exp_s = "RTOI";
+        else if (exp == INT_NUMBER) exp_s = "целое число";
+        else if (exp == REAL_NUMBER) exp_s = "вещественное число";
+        else if (exp == MINUS) exp_s = "минус";
+        else if (exp == PLUS) exp_s = "плюс";
+        else if (exp == RPAREN) exp_s = "закрывающая скобка";
+        else if (exp == LPAREN) exp_s = "открывающая скобка";
+        else if (exp == END_FILE) exp_s = "конец файла";
+        else exp_s = "токен";
     
         error("Ожидался " + exp_s);
-        synchronize();
+        _continue();
     }
 }
-
 
 Node* SyntaxisTree::parse_begin() {
     Node* node = new Node("Begin", Token(), cur_token.line);
@@ -76,8 +74,8 @@ Node* SyntaxisTree::parse_begin() {
     checker(PROGRAM);
     
     if (cur_token.type == IDENTIFIER) {
-        Node* idNode = new Node("Id", cur_token, cur_token.line);
-        node->add(idNode);
+        Node* inode = new Node("Id", cur_token, cur_token.line);
+        node->add(inode);
         hashTable.insert(cur_token);
         next_token();
     } else {
@@ -99,8 +97,8 @@ Node* SyntaxisTree::parse_end() {
     checker(END);
     
     if (cur_token.type == IDENTIFIER) {
-        Node* idNode = new Node("Id", cur_token, cur_token.line);
-        node->add(idNode);
+        Node* inode = new Node("Id", cur_token, cur_token.line);
+        node->add(inode);
         hashTable.insert(cur_token);
         next_token();
     } else {
@@ -129,13 +127,13 @@ Node* SyntaxisTree::parse_type() {
     Node* node = new Node("Type", Token(), cur_token.line);
     
     if (cur_token.type == INTEGER) {
-        Node* typeNode = new Node("INTEGER", cur_token, cur_token.line);
-        node->add(typeNode);
+        Node* ntype = new Node("INTEGER", cur_token, cur_token.line);
+        node->add(ntype);
         checker(INTEGER);
     }
     else if (cur_token.type == REAL) {
-        Node* typeNode = new Node("REAL", cur_token, cur_token.line);
-        node->add(typeNode);
+        Node* ntype = new Node("REAL", cur_token, cur_token.line);
+        node->add(ntype);
         checker(REAL);
     }
     else {
@@ -151,8 +149,8 @@ Node* SyntaxisTree::parse_var_list() {
     if (cur_token.type == IDENTIFIER) {
         bool ok = cur_token.value.back() == ',';
         if (ok) cur_token.value.pop_back();
-        Node* idNode = new Node("Id", cur_token, cur_token.line);
-        node->add(idNode);
+        Node* inode = new Node("Id", cur_token, cur_token.line);
+        node->add(inode);
         hashTable.insert(cur_token);
         checker(IDENTIFIER);
         
@@ -160,8 +158,8 @@ Node* SyntaxisTree::parse_var_list() {
             ok = cur_token.value.back() == ',';
             if (ok) cur_token.value.pop_back();
             if (cur_token.type == IDENTIFIER) {
-                Node* nextIdNode = new Node("Id", cur_token, cur_token.line);
-                node->add(nextIdNode);
+                Node* ninode = new Node("Id", cur_token, cur_token.line);
+                node->add(ninode);
                 hashTable.insert(cur_token);
                 checker(IDENTIFIER);
             }
@@ -210,8 +208,8 @@ Node* SyntaxisTree::parse_op() {
             error("Synt error: name " + cur_token.value);
     }
     if (cur_token.type == IDENTIFIER) {
-        Node* idNode = new Node("Id", cur_token, cur_token.line);
-        node->add(idNode);
+        Node* inode = new Node("Id", cur_token, cur_token.line);
+        node->add(inode);
         hashTable.insert(cur_token);
         checker(IDENTIFIER);
         
@@ -238,7 +236,7 @@ Node* SyntaxisTree::parse_op() {
 
 
 Node* SyntaxisTree::parse_expr() {
-    Node* node = new Node("Expr", Token(), cur_token.line);
+    Node* node = new Node("expr", Token(), cur_token.line);
     
     node->add(parse_simple_expr());
     
@@ -263,54 +261,37 @@ Node* SyntaxisTree::parse_expr() {
 }
 
 Node* SyntaxisTree::parse_simple_expr() {
-    Node* node = new Node("SimpleExpr", Token(), cur_token.line);
+    Node* node = new Node("dop_expr", Token(), cur_token.line);
     
-    switch (cur_token.type) {
-        case IDENTIFIER: {
-            Node* id = new Node("Id", cur_token, cur_token.line);
-            if (cur_token.value.back() == ',')
-                error("Synt error: name " + cur_token.value);
-            node->add(id);
-            hashTable.insert(cur_token);
-            checker(IDENTIFIER);
-            break;
-        }
-        case INT_NUMBER:
-        case REAL_NUMBER: {
-            Node* tmp = new Node("Const", cur_token, cur_token.line);
-            node->add(tmp);
-            hashTable.insert(cur_token);
-            next_token();
-            break;
-        }
-        case LPAREN: {
-            checker(LPAREN);
-            ++d;
-            node->add(parse_expr());
-            checker(RPAREN);
-//            --d;
-            break;
-        }
-        case ITOR:
-        case RTOI: {
-            Node* tmp = new Node(
-                cur_token.type == ITOR ? "ITOR" : "RTOI",
-                cur_token, cur_token.line);
-            checker((tmp->token.type == ITOR ? ITOR : RTOI));
-            checker(LPAREN);
-//            ++d;
-            tmp->add(parse_expr());
-            checker(RPAREN);
-//            --d;
-            node->add(tmp);
-            break;
-        }
-        default: {
-            error("Неправильно вырожение");
-            break;
-        }
-    }
-    
+    if (cur_token.type == IDENTIFIER) {
+        Node* id = new Node("Id", cur_token, cur_token.line);
+        if (cur_token.value.back() == ',')
+            error("Synt error: name " + cur_token.value);
+        node->add(id);
+        hashTable.insert(cur_token);
+        checker(IDENTIFIER);
+    } else if (cur_token.type == INT_NUMBER || cur_token.type == REAL_NUMBER) {
+        Node* tmp = new Node("Const", cur_token, cur_token.line);
+        node->add(tmp);
+        hashTable.insert(cur_token);
+        next_token();
+    } else if (cur_token.type == LPAREN) {
+        checker(LPAREN);
+//        ++d;
+        node->add(parse_expr());
+        checker(RPAREN);
+//        --d;
+    } else if (cur_token.type == RTOI || cur_token.type == ITOR) {
+        Node* tmp = new Node(cur_token.type == ITOR ? "ITOR" : "RTOI", cur_token, cur_token.line);
+        checker((tmp->token.type == ITOR ? ITOR : RTOI));
+        checker(LPAREN);
+        //            ++d;
+        tmp->add(parse_expr());
+        checker(RPAREN);
+        //            --d;
+        node->add(tmp);
+    } else error("Неправильно вырожение");
+
     return node;
 }
 

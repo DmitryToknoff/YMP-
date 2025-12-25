@@ -5,15 +5,15 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "hash_table.h"
 #include <fstream>
 #include <iostream>
 
 class Semantic {
-private:
     std::string title;
     std::vector<std::string> errors;
     std::vector<std::string> postfix_code;
-    std::map<std::string, bool> real, intager;
+    HashTable ht;
 
     void add_error(const std::string& msg, int line);
     
